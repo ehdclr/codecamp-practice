@@ -1,0 +1,16 @@
+
+show databases; # 데이터베이스 목록 보기;
+
+use myproject; # myproject db 사용하기 
+
+show tables; #myproject 안의 테이블들 보여줘 
+
+show variables ; #DB 설정 값 보여줘 -> 커넥션 최댓값 -> max connections를 보고 싶음 
+
+set global max_connections = 15 ; # max_connections를 15개를 최댓값 바꾸기 
+
+show status; #지금 연결된 상태(갯수)를 보여줘 (Thread connected) 보면됨
+
+show processlist; # 현재 연결된 커넥션 목록 보여줘 
+
+kill [connectionID] #커넥션 끊어줘 

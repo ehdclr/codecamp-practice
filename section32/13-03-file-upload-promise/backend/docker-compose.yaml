@@ -1,0 +1,30 @@
+version: "3.7"
+
+
+#!컴퓨터들
+
+services:
+    #! 컴퓨터 이름
+    my-backend:
+      build:
+          context: .
+          dockerfile: dockerfile
+      volumes:
+        - ./src:/myfolder/src
+      ports:
+        - 3000:3000
+      env_file:
+        - ./.env.docker
+
+
+
+    my-database:
+      #! 사양 문제 때문에 안되면 아래 줄 추가 
+      # platform: linux/86_64 
+      image: mysql:latest
+      environment:
+        #! db에 mydocer라는 데이터베이스가 만들어짐 
+        MYSQL_DATABASE: "mydocker"
+        MYSQL_ROOT_PASSWORD: "root"
+      ports:
+        - 3306:3306

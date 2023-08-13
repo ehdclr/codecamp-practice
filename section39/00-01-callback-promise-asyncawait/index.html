@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <title>콜백과 친구들</title>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script>
+      const myCallback = () => {
+        //axios 대신 XMLHttpRequest
+        const aaa = new XMLHttpRequest();
+        aaa.open("get", "http://127.0.0.1:8000/api/data");
+        aaa.send(); //요청
+        aaa.addEventListener("load", (res) => {
+          //이부분이 콜백함수
+
+          const num = res.target.response.split(" ")[0];
+
+          //두번째 요청 -> 랜덤숫자에대한 게시글
+          const data = JSON.stringify({
+            num: num,
+          });
+          const bb = new XMLHttpRequest();
+          bb.open("post", `http://127.0.0.1:8000/api/data2`);
+          bb.setRequestHeader("Content-Type", "application/json");
+          bb.send(data);
+          bb.addEventListener("load", (res) => {
+            const userId = JSON.parse(res.target.response).UserId; //객체형태로 변경
+
+            // 세번 째 요청 게시글을 쓴 사람에 대한 글을 거져오기
+            const data = JSON.stringify({
+              userId: userId,
+            });
+            const ccc = new XMLHttpRequest();
+            ccc.open("post", `http://127.0.0.1:8000/api/data3`);
+            ccc.setRequestHeader("Content-Type", "application/json");
+            ccc.send(data);
+
+            ccc.addEventListener("load", (res) => {
+              const data = JSON.parse(res.target.response);
+              data.map((el) => console.log(el));
+            });
+          });
+        }); //데이터 받아오기
+      };
+
+      //프로미스
+      const myPromise = () => {
+        axios
+          .get("http://numbersapi.com/random?min=1&max=200")
+          .then((res) => {
+            const num = res.data.split(" ")[0];
+            return axios.post(`http://127.0.0.1:8000/api/data2`, {
+              num: num,
+            });
+          })
+          .then((res) => {
+            const userId = res.data.UserId;
+            return axios.post(`http://127.0.0.1:8000/api/data3`, {
+              userId: userId,
+            });
+          })
+          .then((res) => res.data.map((el) => console.log(el)));
+      };
+
+      //async-await
+      const myAsyncAwait = async () => {
+        const num = await axios.get(
+          "http://numbersapi.com/random?min=1&max=200"
+        );
+        const userId = await axios.post(`http://127.0.0.1:8000/api/data2`, {
+          num: num.data.split(" ")[0],
+        });
+
+        const result = await axios.post(`http://127.0.0.1:8000/api/data3`, {
+          userId: userId.data.UserId,
+        });
+        result.data.map((el) => console.log(el));
+      };
+    </script>
+  </head>
+  <body>
+    <button onclick="myCallback()">Callback 연습하기</button>
+    <button onclick="myPromise()">Promise 연습하기</button>
+    <button onclick="myAsyncAwait()">AsyncAwait 연습하기</button>
+  </body>
+</html>
